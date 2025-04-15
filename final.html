@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CycleCommute | Sustainable Cycling for the Future</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #81c784;
+            --accent-color: #4caf50;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --header-bg: #1b5e20;
+            --footer-bg: #1b5e20;
+            --nav-hover: #388e3c;
+        }
+
+        .dark-mode {
+            --primary-color: #1b5e20;
+            --secondary-color: #2e7d32;
+            --accent-color: #4caf50;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --header-bg: #0d1f0f;
+            --footer-bg: #0d1f0f;
+            --nav-hover: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        header.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background-color: var(--nav-hover);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .hero-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .video-section {
+            padding: 4rem 0;
+            background-color: var(--bg-color);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .video-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .benefits {
+            padding: 4rem 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .benefits.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out, box-shadow 0.3s;
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+        .card:nth-child(2) {
+            transition-delay: 0.3s;
+        }
+        .card:nth-child(3) {
+            transition-delay: 0.5s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .stats {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .stats.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .stat-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-item:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+        .stat-item:nth-child(2) {
+            transition-delay: 0.3s;
+        }
+        .stat-item:nth-child(3) {
+            transition-delay: 0.5s;
+        }
+        .stat-item:nth-child(4) {
+            transition-delay: 0.7s;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta {
+            padding: 4rem 0;
+            text-align: center;
+            background-color: var(--secondary-color);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .cta.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 1rem 0;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .social-links a.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .social-links a:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+        .social-links a:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+        .social-links a:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+        .social-links a:nth-child(4) {
+            transition-delay: 0.4s;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero {
+                padding: 0;
+            }
+            
+            .video-container {
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="CycleCommute Logo">
+                <h1>CycleCommute</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#benefits">Benefits</a></li>
+                    <li><a href="#video">Video</a></li>
+                    <li><a href="#stats">Impact</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="toggle-container">
+                <span>Dark Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Pedal Towards a Sustainable Future</h2>
+            <p>Join the movement of eco-conscious commuters who are reducing their carbon footprint one ride at a time. Discover how cycling can transform your commute and our planet.</p>
+            <a href="#video" class="btn">Watch Our Story</a>
+        </div>
+    </section>
+
+    <section class="video-section" id="video">
+        <div class="container">
+            <h2 class="section-title">Why Cycling Matters</h2>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/BxKfpt70rLI?rel=0&modestbranding=1" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <h2 class="section-title">Why Cycle to Work?</h2>
+            <div class="cards">
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1511994298241-608e28f14fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Eco-friendly commute">
+                    <div class="card-content">
+                        <h3>Eco-Friendly</h3>
+                        <p>Cycling produces zero emissions, helping to reduce air pollution and combat climate change. Each mile cycled saves approximately 1 pound of CO2 compared to driving.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Healthy lifestyle">
+                    <div class="card-content">
+                        <h3>Health Benefits</h3>
+                        <p>Regular cycling improves cardiovascular health, builds muscle strength, and reduces stress. Commuters who cycle regularly have 40% lower risk of premature death.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Cost savings">
+                    <div class="card-content">
+                        <h3>Cost Effective</h3>
+                        <p>Save thousands annually on fuel, parking, and vehicle maintenance. The average annual cost of owning and operating a bicycle is just 1% of the cost of a car.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats" id="stats">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Our Collective Impact</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>75%</h3>
+                    <p>Reduction in carbon footprint for regular cycle commuters</p>
+                </div>
+                <div class="stat-item">
+                    <h3>2.5x</h3>
+                    <p>More likely to meet daily exercise recommendations</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50%</h3>
+                    <p>Reduction in sick days for employees who cycle to work</p>
+                </div>
+                <div class="stat-item">
+                    <h3>30min</h3>
+                    <p>Daily cycling halves heart disease risk</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="resources">
+        <div class="container">
+            <h2>Ready to Start Your Cycling Journey?</h2>
+            <p style="color: white; margin-bottom: 1.5rem;">Download our free guide to cycling commutes and join our community of sustainable commuters.</p>
+            <a href="#" class="btn">Get the Guide</a>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <h3>CycleCommute</h3>
+            <p>Promoting sustainable transportation for a greener tomorrow</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>&copy; 2023 CycleCommute. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        // Check for saved user preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Scroll reveal animations
+        let lastScrollPosition = 0;
+        let ticking = false;
+        const scrollDirection = { y: 0 };
+
+        function checkVisibility(scrollPos, direction) {
+            // Header animation
+            if (scrollPos > 50) {
+                document.querySelector('header').classList.add('visible');
+            }
+
+            // Hero content animation
+            const heroContent = document.querySelector('.hero-content');
+            const heroSection = document.querySelector('.hero');
+            const heroRect = heroSection.getBoundingClientRect();
+            const heroVisible = heroRect.top < window.innerHeight && heroRect.bottom >= 0;
+            
+            if (heroVisible) {
+                heroContent.classList.add('visible');
+            } else if (direction === 'up') {
+                heroContent.classList.remove('visible');
+            }
+
+            // Section animations
+            const sections = document.querySelectorAll('section:not(.hero), footer');
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const isVisible = rect.top < (window.innerHeight * 0.75) && rect.bottom >= 0;
+                
+                if (isVisible) {
+                    section.classList.add('visible');
+                    
+                    // Animate cards within visible sections
+                    if (section.classList.contains('benefits')) {
+                        const cards = section.querySelectorAll('.card');
+                        cards.forEach(card => card.classList.add('visible'));
+                    }
+                    
+                    // Animate stats within visible sections
+                    if (section.classList.contains('stats')) {
+                        const stats = section.querySelectorAll('.stat-item');
+                        stats.forEach(stat => stat.classList.add('visible'));
+                    }
+                    
+                    // Animate social links in footer
+                    if (section.id === 'contact') {
+                        const socialLinks = section.querySelectorAll('.social-links a');
+                        socialLinks.forEach(link => link.classList.add('visible'));
+                    }
+                    
+                    // Animate section titles
+                    const title = section.querySelector('.section-title');
+                    if (title) title.classList.add('visible');
+                } else if (direction === 'up') {
+                    section.classList.remove('visible');
+                    
+                    if (section.classList.contains('benefits')) {
+                        const cards = section.querySelectorAll('.card');
+                        cards.forEach(card => card.classList.remove('visible'));
+                    }
+                    
+                    if (section.classList.contains('stats')) {
+                        const stats = section.querySelectorAll('.stat-item');
+                        stats.forEach(stat => stat.classList.remove('visible'));
+                    }
+                    
+                    if (section.id === 'contact') {
+                        const socialLinks = section.querySelectorAll('.social-links a');
+                        socialLinks.forEach(link => link.classList.remove('visible'));
+                    }
+                    
+                    const title = section.querySelector('.section-title');
+                    if (title) title.classList.remove('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', function() {
+            lastScrollPosition = window.scrollY;
+            scrollDirection.y = lastScrollPosition > scrollDirection.y ? 'down' : 'up';
+            scrollDirection.y = lastScrollPosition;
+            
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    checkVisibility(lastScrollPosition, scrollDirection.y);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Initial check on load
+        window.addEventListener('load', function() {
+            checkVisibility(window.scrollY, 'down');
+            
+            // Show header after slight delay
+            setTimeout(() => {
+                document.querySelector('header').classList.add('visible');
+            }, 500);
+            
+            // Show hero content after header animation
+            setTimeout(() => {
+                document.querySelector('.hero-content').classList.add('visible');
+            }, 1000);
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
